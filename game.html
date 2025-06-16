@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FastClicker - Jogo</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Luckiest Guy', cursive;
+      background: linear-gradient(to right, #ffecb3, #ffe0b2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .player-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .player-info img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid #f57c00;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      color: #ff5722;
+      text-shadow: 2px 2px 0 #ff9800;
+    }
+
+    .stats {
+      font-size: 1.2rem;
+      color: #6d4c41;
+      margin-bottom: 15px;
+    }
+
+    #timer {
+      font-size: 2.2rem;
+      color: #d84315;
+      font-weight: bold;
+      margin-bottom: 25px;
+      text-shadow: 1px 1px 0 #ffcc80;
+    }
+
+    button {
+      padding: 24px 72px;
+      background-color: #ff9800;
+      border: 3px solid #f57c00;
+      color: white;
+      border-radius: 15px;
+      font-size: 2.3rem;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 #f57c00;
+      transition: all 0.3s ease;
+      font-family: 'Luckiest Guy', cursive;
+      margin: 10px;
+    }
+
+    button:hover {
+      background-color: #ffa726;
+      transform: scale(1.05);
+      box-shadow: 6px 6px 0 #f57c00;
+    }
+
+    button:active {
+      transform: scale(0.95);
+      box-shadow: 2px 2px 0 #f57c00;
+    }
+
+    #finishBtn, #logoutBtn {
+      display: none;
+      padding: 15px 40px;
+      font-size: 1.4rem;
+    }
+
+    .bonus-info {
+      margin: 10px 0 25px;
+      font-size: 1.3rem;
+      color: #388e3c;
+      font-weight: bold;
+      min-height: 30px;
+      text-shadow: 1px 1px 0 #c8e6c9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="player-info">
+    <img id="playerAvatar" src="" alt="Avatar do Jogador" />
+    <h2 id="playerNick">Jogador</h2>
+    <div class="stats">
+      Cliques: <span id="clickCount">0</span><br />
+      Pontuação: <span id="score">0</span>
+    </div>
+    <div id="timer">Tempo: 20s</div>
+    <div class="bonus-info" id="bonusInfo"></div>
+  </div>
+
+  <div class="buttons">
+    <button id="clickBtn">Clique aqui!</button>
+    <button id="finishBtn">Salvar Pontuação</button>
+    <button id="logoutBtn">Sair</button>
+  </div>
+
+  <audio id="soundClick" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+  <audio id="soundBonus" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="soundEnd" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+  <script type="module">
+    import { auth, db } from "./firebase-config.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (!userData) {
+      alert("Nenhum usuário autenticado. Você será redirecionado.");
+      window.location.href = "index.html";
+    }
+
+    const playerNick = document.getElementById("playerNick");
+    const playerAvatar = document.getElementById("playerAvatar");
+    const clickCountSpan = document.getElementById("clickCount");
+    const scoreSpan = document.getElementById("score");
+    const timerSpan = document.getElementById("timer");
+    const bonusInfo = document.getElementById("bonusInfo");
+    const clickBtn = document.getElementById("clickBtn");
+    const finishBtn = document.getElementById("finishBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Sons
+    const soundClick = document.getElementById("soundClick");
+    const soundBonus = document.getElementById("soundBonus");
+    const soundEnd = document.getElementById("soundEnd");
+
+    playerNick.textContent = userData.nick;
+    playerAvatar.src = userData.avatarURL !== "default" ? userData.avatarURL : "default-avatar.png";
+
+    let cliques = 0;
+    let pontuacao = 0;
+    let tempoRestante = 20; // segundos
+    let multiplicador = 1;
+    let bonusAtivo = false;
+    let bonusTimeoutId = null;
+
+    // Carrega progresso salvo (se existir)
+    const progressoSalvo = JSON.parse(sessionStorage.getItem("progresso"));
+    if (progressoSalvo) {
+      cliques = progressoSalvo.cliques || 0;
+      pontuacao = progressoSalvo.pontuacao || 0;
+      tempoRestante = progressoSalvo.tempoRestante || 20;
+    }
+
+    clickCountSpan.textContent = cliques;
+    scoreSpan.textContent = pontuacao;
+    timerSpan.textContent = `Tempo: ${tempoRestante}s`;
+
+    clickBtn.disabled = false;
+    clickBtn.style.display = "inline-block";
+    finishBtn.style.display = "none";
+    finishBtn.textContent = "Salvar Pontuação";
+    logoutBtn.style.display = "none";
+
+    function calcularPontuacao() {
+      return cliques * 10 * multiplicador;
+    }
+
+    function ativarBonus() {
+      multiplicador = 2;
+      bonusAtivo = true;
+      bonusInfo.textContent = "Bônus! Pontos em dobro por 5 segundos!";
+      soundBonus.currentTime = 0;
+      soundBonus.play();
+
+      if (bonusTimeoutId) clearTimeout(bonusTimeoutId);
+      bonusTimeoutId = setTimeout(() => {
+        multiplicador = 1;
+        bonusAtivo = false;
+        bonusInfo.textContent = "";
+      }, 5000);
+    }
+
+    clickBtn.addEventListener("click", () => {
+      if (tempoRestante <= 0) return;
+
+      cliques++;
+      pontuacao = calcularPontuacao();
+      clickCountSpan.textContent = cliques;
+      scoreSpan.textContent = pontuacao;
+
+      // Som clique reinicia para evitar overlap
+      soundClick.pause();
+      soundClick.currentTime = 0;
+      soundClick.play();
+
+      if (cliques % 10 === 0 && !bonusAtivo) {
+        ativarBonus();
+      }
+    });
+
+    // Temporizador regressivo
+    const timerId = setInterval(() => {
+      tempoRestante--;
+      timerSpan.textContent = `Tempo: ${tempoRestante}s`;
+
+      // Salva progresso automaticamente na sessão a cada segundo
+      sessionStorage.setItem("progresso", JSON.stringify({
+        cliques,
+        pontuacao,
+        tempoRestante
+      }));
+
+      if (tempoRestante <= 0) {
+        clearInterval(timerId);
+        timerSpan.textContent = "Tempo esgotado!";
+
+        // Oculta o botão de clique e habilita o de salvar + sair
+        clickBtn.disabled = true;
+        clickBtn.style.display = "none";
+        finishBtn.style.display = "inline-block";
+        logoutBtn.style.display = "inline-block";
+
+        soundEnd.currentTime = 0;
+        soundEnd.play();
+
+        // Remove progresso para evitar reinício com tempo 0
+        sessionStorage.removeItem("progresso");
+      }
+    }, 1000);
+
+    finishBtn.addEventListener("click", async () => {
+      try {
+        // Usa o nick do usuário para referenciar o documento Firestore
+        const userDocRef = doc(db, "usuarios", userData.nick);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userDataDB = userDocSnap.data();
+          const cliquesAcumulados = userDataDB.cliques_totais || 0;
+          const pontuacaoAcumulada = userDataDB.pontuacao_total || 0;
+
+          const novosCliquesTotais = cliquesAcumulados + cliques;
+          const novaPontuacaoTotal = pontuacaoAcumulada + pontuacao;
+
+          await updateDoc(userDocRef, {
+            cliques_totais: novosCliquesTotais,
+            pontuacao_total: novaPontuacaoTotal,
+            ultima_partida: new Date().toISOString()
+          });
+
+          alert(`Pontuação salva! Total de pontos: ${novaPontuacaoTotal}, cliques totais: ${novosCliquesTotais}.`);
+
+          // Atualiza os dados da sessão para refletir as novas pontuações
+          userData.cliques_totais = novosCliquesTotais;
+          userData.pontuacao_total = novaPontuacaoTotal;
+          sessionStorage.setItem("user", JSON.stringify(userData));
+
+        } else {
+          alert("Usuário não encontrado no banco de dados.");
+        }
+      } catch (err) {
+        console.error("Erro ao salvar dados:", err);
+        alert("Erro ao salvar dados. Tente novamente.");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      sessionStorage.removeItem("user");
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

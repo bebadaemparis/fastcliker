@@ -1,0 +1,71 @@
+/* Ranking fixo lateral */
+#ranking {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 490px; /* largura aumentada */
+  height: 100vh;
+  background-color: #fff3e0;
+  border-right: 3px solid #f57c00;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Luckiest Guy', cursive;
+}
+
+#ranking h2 {
+  color: #ff5722;
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 0 #ff9800;
+}
+
+.player-rank {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff8e1;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+
+.player-rank span {
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 30px;
+}
+
+.player-rank img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f57c00;
+}
+
+.player-rank .nick {
+  flex: 1;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #6d4c41;
+}
+
+/* Container para Pontos e Cliques */
+.player-rank .stats {
+  display: flex;
+  gap: 20px;
+  min-width: 200px;
+  justify-content: flex-end;
+}
+
+/* Ajustes para Pontos e Cliques */
+.player-rank .score,
+.player-rank .clicks {
+  font-size: 1rem;
+  text-align: right;
+  color: #444;
+  min-width: 90px;
+}
