@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FAST CLICK - VERSÃO ALFA 1.0</title>
+  <title>FAST CLICK - VERSÃO ALFA 1.1 ATUALIZADO EM 16/06/2025</title>
   <style>
+    /* ESTILOS GERAIS */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea, #764ba2);
@@ -17,24 +18,46 @@
       justify-content: flex-start;
       padding: 40px 20px;
     }
+
+    /* TELAS PRINCIPAIS */
+    #login-screen {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #game-screen {
+      width: 100%;
+      max-width: 800px;
+      display: none; /* Inicialmente escondido */
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ELEMENTOS DO JOGO */
     h1 {
       margin-bottom: 10px;
       text-align: center;
       font-weight: 700;
       text-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
+
     #time {
       font-size: 3rem;
       font-weight: 700;
       margin: 20px 0 10px 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
+
     #score {
       font-size: 2rem;
       margin-bottom: 10px;
       font-weight: 600;
       text-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
+
     #combo {
       font-size: 1.3rem;
       margin-bottom: 20px;
@@ -44,9 +67,11 @@
       position: relative;
       user-select: none;
     }
+
     #combo.combo-glow {
       animation: comboGlow 1.5s ease-in-out infinite alternate;
     }
+
     @keyframes comboGlow {
       0% {
         text-shadow:
@@ -67,23 +92,8 @@
           0 0 55px #ffea00;
       }
     }
-    #frenzy-bar-container {
-      width: 100%;
-      max-width: 300px;
-      height: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 0 auto 15px auto;
-      display: none;
-      box-shadow: 0 0 8px #00ffcc;
-    }
-    #frenzy-bar {
-      height: 100%;
-      width: 0%;
-      background: #00ffcc;
-      transition: width 0.1s linear;
-    }
+
+    /* BOTÃO PRINCIPAL */
     #click-btn {
       font-size: 3rem;
       padding: 25px 60px;
@@ -98,99 +108,49 @@
       user-select: none;
       position: relative;
     }
+
     #click-btn.bonus {
       animation: pulse 1s infinite alternate;
     }
+
     @keyframes pulse {
       0% { box-shadow: 0 0 10px 5px #4ade80; }
       100% { box-shadow: 0 0 25px 10px #22c55e; }
     }
+
     #click-btn:active:not(:disabled) {
       background-color: #ff8533;
       transform: scale(0.95);
       box-shadow: 0 3px #cc5200;
     }
+
     #click-btn:disabled {
       background-color: #999;
       box-shadow: none;
       cursor: not-allowed;
     }
-    #start-btn {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      padding: 10px 30px;
-      border-radius: 10px;
-      border: none;
-      background-color: #22c55e;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px #15803d;
-      transition: background-color 0.2s ease;
-    }
-    #start-btn:disabled {
-      background-color: #7f9f88;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    #start-btn:hover:not(:disabled) {
-      background-color: #2dd36f;
-    }
-    #player-name {
-      margin-top: 20px;
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: none;
-      font-size: 1.2rem;
-      width: 250px;
-      text-align: center;
-    }
-    #ranking {
-      margin-top: 40px;
-      max-width: 400px;
+
+    /* BARRA DE FRENESI */
+    #frenzy-bar-container {
       width: 100%;
-      background-color: rgba(0,0,0,0.3);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 8px 15px rgba(0,0,0,0.25);
-    }
-    #ranking h2 {
-      margin-bottom: 15px;
-      text-align: center;
-      font-weight: 700;
-      text-shadow: 0 2px 3px rgba(0,0,0,0.3);
-    }
-    #ranking-list {
-      list-style: decimal inside;
-      padding-left: 0;
-      max-height: 300px;
-      overflow-y: auto;
-      margin: 0;
-      scrollbar-width: thin;
-      scrollbar-color: #764ba2 rgba(255,255,255,0.1);
-    }
-    #ranking-list::-webkit-scrollbar {
-      width: 8px;
-    }
-    #ranking-list::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.1);
+      max-width: 300px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto 15px auto;
+      display: none;
+      box-shadow: 0 0 8px #00ffcc;
     }
-    #ranking-list::-webkit-scrollbar-thumb {
-      background-color: #764ba2;
-      border-radius: 10px;
+
+    #frenzy-bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      transition: width 0.1s linear;
     }
-    #ranking-list li {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.1);
-      transition: background-color 0.3s;
-    }
-    #ranking-list li:hover {
-      background-color: rgba(255,255,255,0.2);
-    }
+
+    /* MENSAGENS DE BÔNUS */
     #bonus-message {
       font-size: 1.5rem;
       font-weight: bold;
@@ -201,6 +161,119 @@
       min-height: 2rem;
       user-select: none;
     }
+
+    /* FORMULÁRIOS DE LOGIN */
+    #player-name {
+      margin-top: 20px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.2rem;
+      width: 250px;
+      text-align: center;
+    }
+
+    #player-password, #register-password {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.2rem;
+      width: 250px;
+      text-align: center;
+    }
+
+    #password-container, #register-container {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #confirm-register-btn, #confirm-password-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background-color: #22c55e;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px #15803d;
+      transition: background-color 0.2s ease;
+    }
+
+    #confirm-register-btn:hover, #confirm-password-btn:hover {
+      background-color: #2dd36f;
+    }
+
+    /* MENSAGENS DE STATUS */
+    #nickname-message, #register-message, #password-message {
+      margin-top: 5px;
+      font-size: 0.9rem;
+      min-height: 20px;
+    }
+
+    /* RANKING */
+    #ranking {
+      margin-top: 40px;
+      max-width: 400px;
+      width: 100%;
+      background-color: rgba(0,0,0,0.3);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.25);
+    }
+
+    #ranking h2 {
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 700;
+      text-shadow: 0 2px 3px rgba(0,0,0,0.3);
+    }
+
+    #ranking-list {
+      list-style: decimal inside;
+      padding-left: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #764ba2 rgba(255,255,255,0.1);
+    }
+
+    #ranking-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #ranking-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+    }
+
+    #ranking-list::-webkit-scrollbar-thumb {
+      background-color: #764ba2;
+      border-radius: 10px;
+    }
+
+    #ranking-list li {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      transition: background-color 0.3s;
+    }
+
+    #ranking-list li:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    .bot-detected {
+      color: #ff4444;
+      font-weight: bold;
+    }
+
+    /* MODAL DE FIM DE JOGO */
     #end-game-modal {
       display: none;
       position: fixed;
@@ -213,6 +286,7 @@
       justify-content: center;
       align-items: center;
     }
+
     #end-game-content {
       background: linear-gradient(135deg, #764ba2, #667eea);
       padding: 30px;
@@ -222,16 +296,19 @@
       width: 90%;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
+
     #end-game-content h2 {
       margin-top: 0;
       font-size: 2rem;
       color: #ffd700;
     }
+
     #end-game-stats {
       margin: 20px 0;
       font-size: 1.2rem;
       line-height: 1.6;
     }
+
     .end-game-btn {
       margin: 10px;
       padding: 12px 25px;
@@ -242,28 +319,34 @@
       cursor: pointer;
       transition: all 0.3s;
     }
+
     #play-again-btn {
       background-color: #22c55e;
       color: white;
     }
+
     #play-again-btn:hover {
       background-color: #2dd36f;
       transform: translateY(-2px);
     }
+
     #exit-btn {
       background-color: #ef4444;
       color: white;
     }
+
     #exit-btn:hover {
       background-color: #f87171;
       transform: translateY(-2px);
     }
+
+    /* RESPONSIVIDADE */
     @media (max-width: 480px) {
       #click-btn {
         font-size: 2.2rem;
         padding: 20px 40px;
       }
-      #player-name {
+      #player-name, #player-password, #register-password {
         width: 100%;
       }
     }
@@ -271,28 +354,48 @@
 </head>
 <body>
 
-  <h1>FAST CLICKER - JOGO EM FASE ALFA 1.0 DESENVOLVIDO BY XANDY - 3º PERIODO ADS - UNINORTE MANAUS - AM</h1>
+  <!-- TELA DE LOGIN/REGISTRO -->
+  <div id="login-screen">
+    <h1>FAST CLICK - VERSÃO ALFA 1.1 ATUALIZADO EM 16/06/2025</h1>
 
-  <input type="text" id="player-name" placeholder="Digite seu nome" />
-  <button id="start-btn">Começar Jogo</button>
-
-  <div id="time">Tempo: 0.0s</div>
-  <div id="score">Cliques: 0</div>
-  <div id="combo">Combo: x1</div>
-
-  <div id="frenzy-bar-container">
-    <div id="frenzy-bar"></div>
+    <input type="text" id="player-name" placeholder="Digite seu nickname único" />
+    <div id="nickname-message"></div>
+    
+    <div id="register-container">
+      <input type="password" id="register-password" placeholder="Cadastre uma senha" />
+      <button id="confirm-register-btn">Cadastrar e Jogar</button>
+      <div id="register-message"></div>
+    </div>
+    
+    <div id="password-container">
+      <input type="password" id="player-password" placeholder="Digite sua senha" />
+      <button id="confirm-password-btn">Entrar</button>
+      <div id="password-message"></div>
+    </div>
   </div>
 
-  <div id="bonus-message"></div>
+  <!-- TELA DO JOGO -->
+  <div id="game-screen">
+    <div id="time">Tempo: 0.0s</div>
+    <div id="score">Cliques: 0</div>
+    <div id="combo">Combo: x1</div>
 
-  <button id="click-btn" disabled>Clique aqui!</button>
+    <div id="frenzy-bar-container">
+      <div id="frenzy-bar"></div>
+    </div>
 
+    <div id="bonus-message"></div>
+
+    <button id="click-btn" disabled>Clique aqui!</button>
+  </div>
+
+  <!-- RANKING (VISÍVEL EM AMBAS AS TELAS) -->
   <div id="ranking">
     <h2>Ranking dos Melhores Jogadores</h2>
     <ol id="ranking-list"></ol>
   </div>
 
+  <!-- MODAL DE FIM DE JOGO -->
   <div id="end-game-modal">
     <div id="end-game-content">
       <h2>Fim de Jogo!</h2>
@@ -306,10 +409,13 @@
     </div>
   </div>
 
+  <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
+  <!-- JAVASCRIPT DO JOGO -->
   <script>
+    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDfE2pKQhqJsJTSn4dfj4qyRpWivgB6GVM",
       authDomain: "ghostclicker-fa27e.firebaseapp.com",
@@ -319,27 +425,50 @@
       appId: "1:348503867256:web:39ae55d9f5c249aa8b928d"
     };
 
+    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const startBtn = document.getElementById('start-btn');
-    const clickBtn = document.getElementById('click-btn');
-    const playerNameInput = document.getElementById('player-name');
-    const timeDisplay = document.getElementById('time');
-    const scoreDisplay = document.getElementById('score');
-    const comboDisplay = document.getElementById('combo');
-    const bonusMessage = document.getElementById('bonus-message');
-    const rankingDiv = document.getElementById('ranking');
-    const rankingList = document.getElementById('ranking-list');
-    const endGameModal = document.getElementById('end-game-modal');
-    const finalClicksSpan = document.getElementById('final-clicks');
-    const finalComboSpan = document.getElementById('final-combo');
-    const finalScoreSpan = document.getElementById('final-score');
-    const playAgainBtn = document.getElementById('play-again-btn');
-    const exitBtn = document.getElementById('exit-btn');
-    const frenzyBarContainer = document.getElementById('frenzy-bar-container');
-    const frenzyBar = document.getElementById('frenzy-bar');
+    // Verificação de elementos
+    const elementsToCheck = {
+      loginScreen: 'login-screen',
+      gameScreen: 'game-screen',
+      playerNameInput: 'player-name',
+      nicknameMessage: 'nickname-message',
+      registerContainer: 'register-container',
+      registerPassword: 'register-password',
+      confirmRegisterBtn: 'confirm-register-btn',
+      registerMessage: 'register-message',
+      passwordContainer: 'password-container',
+      playerPasswordInput: 'player-password',
+      confirmPasswordBtn: 'confirm-password-btn',
+      passwordMessage: 'password-message',
+      clickBtn: 'click-btn',
+      timeDisplay: 'time',
+      scoreDisplay: 'score',
+      comboDisplay: 'combo',
+      bonusMessage: 'bonus-message',
+      rankingDiv: 'ranking',
+      rankingList: 'ranking-list',
+      endGameModal: 'end-game-modal',
+      finalClicksSpan: 'final-clicks',
+      finalComboSpan: 'final-combo',
+      finalScoreSpan: 'final-score',
+      playAgainBtn: 'play-again-btn',
+      exitBtn: 'exit-btn',
+      frenzyBarContainer: 'frenzy-bar-container',
+      frenzyBar: 'frenzy-bar'
+    };
 
+    const elements = {};
+    for (const [key, value] of Object.entries(elementsToCheck)) {
+      elements[key] = document.getElementById(value);
+      if (!elements[key]) {
+        console.error(`Elemento não encontrado: ${value}`);
+      }
+    }
+
+    // Variáveis do jogo
     let gameDuration = 10;
     let currentTime = 0;
     let timerInterval;
@@ -358,77 +487,414 @@
     let maxSpeedStreak = 2;
     let ghostBoomUsed = false;
     const maxGameTime = 25;
-    let player = { name: '', clicks: 0, combo: 0, maxCombo: 0, multiplier: 1 };
+    let player = { 
+      id: null,
+      name: '', 
+      password: '',
+      clicks: 0, 
+      combo: 0, 
+      maxCombo: 0, 
+      multiplier: 1,
+      bestScore: 0,
+      isBot: false
+    };
+    let currentGameId = '';
+    let savedGame = null;
+    let nicknameAvailable = false;
 
+    // Sons do jogo
     const clickSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
     const comboBreakSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
     const powerUpSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang.ogg');
 
+    // Event Listeners
+    elements.playerNameInput.addEventListener('input', async () => {
+      await checkNicknameAvailability(elements.playerNameInput.value);
+    });
+
+    elements.confirmRegisterBtn.addEventListener('click', async () => {
+      const nickname = elements.playerNameInput.value.trim();
+      const password = elements.registerPassword.value.trim();
+      
+      if (!nickname) {
+        elements.registerMessage.textContent = 'Digite um nickname válido';
+        elements.registerMessage.style.color = '#ff0000';
+        return;
+      }
+      
+      if (password.length < 4) {
+        elements.registerMessage.textContent = 'A senha deve ter pelo menos 4 caracteres';
+        elements.registerMessage.style.color = '#ff0000';
+        return;
+      }
+      
+      const success = await registerNewPlayer(nickname, password);
+      if (success) {
+        startGame();
+      }
+    });
+
+    elements.confirmPasswordBtn.addEventListener('click', async () => {
+      const nickname = elements.playerNameInput.value.trim();
+      const password = elements.playerPasswordInput.value.trim();
+      
+      if (!nickname || !password) {
+        elements.passwordMessage.textContent = 'Preencha ambos os campos';
+        elements.passwordMessage.style.color = '#ff0000';
+        return;
+      }
+      
+      const success = await loginPlayer(nickname, password);
+      if (success) {
+        startGame();
+      } else {
+        elements.passwordMessage.textContent = 'Senha incorreta!';
+        elements.passwordMessage.style.color = '#ff0000';
+      }
+    });
+
+    elements.clickBtn.addEventListener('click', handleClick);
+    elements.playAgainBtn.addEventListener('click', () => {
+      elements.endGameModal.style.display = 'none';
+      savedGame = null;
+      startGame();
+    });
+    elements.exitBtn.addEventListener('click', () => {
+      elements.endGameModal.style.display = 'none';
+      resetLoginScreen();
+    });
+
+    // Inicialização do jogo
+    showRanking();
+
+    // Funções principais do jogo
+    function resetLoginScreen() {
+      elements.playerNameInput.value = '';
+      elements.registerPassword.value = '';
+      elements.playerPasswordInput.value = '';
+      elements.nicknameMessage.textContent = '';
+      elements.registerMessage.textContent = '';
+      elements.passwordMessage.textContent = '';
+      elements.registerContainer.style.display = 'none';
+      elements.passwordContainer.style.display = 'none';
+      
+      // Mostrar tela de login e esconder tela de jogo
+      if (elements.loginScreen) elements.loginScreen.style.display = 'block';
+      if (elements.gameScreen) elements.gameScreen.style.display = 'none';
+      showRanking();
+    }
+
+    async function checkNicknameAvailability(nickname) {
+      if (!nickname.trim()) {
+        elements.nicknameMessage.textContent = '';
+        elements.nicknameMessage.style.color = '';
+        elements.registerContainer.style.display = 'none';
+        elements.passwordContainer.style.display = 'none';
+        return false;
+      }
+
+      try {
+        const snapshot = await db.collection('players')
+          .where('name', '==', nickname)
+          .limit(1)
+          .get();
+        
+        if (snapshot.empty) {
+          elements.nicknameMessage.textContent = 'Nickname disponível! Cadastre uma senha.';
+          elements.nicknameMessage.style.color = '#00ff00';
+          elements.registerContainer.style.display = 'block';
+          elements.passwordContainer.style.display = 'none';
+          nicknameAvailable = true;
+          return true;
+        } else {
+          elements.nicknameMessage.textContent = 'Nickname já registrado. Digite sua senha.';
+          elements.nicknameMessage.style.color = '#ffcc00';
+          elements.registerContainer.style.display = 'none';
+          elements.passwordContainer.style.display = 'block';
+          nicknameAvailable = false;
+          
+          // Verifica se tem dados salvos localmente
+          const savedPlayer = localStorage.getItem('fastClickPlayer');
+          if (savedPlayer) {
+            const playerData = JSON.parse(savedPlayer);
+            if (playerData.name === nickname) {
+              elements.playerPasswordInput.value = playerData.password;
+            }
+          }
+          
+          return false;
+        }
+      } catch (error) {
+        console.error("Erro ao verificar nickname:", error);
+        elements.nicknameMessage.textContent = 'Erro ao verificar nickname';
+        elements.nicknameMessage.style.color = '#ff0000';
+        return false;
+      }
+    }
+
+    async function registerNewPlayer(nickname, password) {
+      try {
+        const newPlayer = {
+          name: nickname,
+          password: password,
+          createdAt: new Date(),
+          bestScore: 0,
+          isBot: false
+        };
+        
+        const docRef = await db.collection('players').add(newPlayer);
+        player.id = docRef.id;
+        player.name = nickname;
+        player.password = password;
+        
+        // Salva no localStorage
+        localStorage.setItem('fastClickPlayer', JSON.stringify({
+          name: nickname,
+          password: password
+        }));
+        
+        elements.registerMessage.textContent = 'Cadastro realizado com sucesso!';
+        elements.registerMessage.style.color = '#00ff00';
+        
+        return true;
+      } catch (error) {
+        console.error("Erro no cadastro:", error);
+        elements.registerMessage.textContent = 'Erro no cadastro. Tente novamente.';
+        elements.registerMessage.style.color = '#ff0000';
+        return false;
+      }
+    }
+
+    async function loginPlayer(nickname, password) {
+      try {
+        const snapshot = await db.collection('players')
+          .where('name', '==', nickname)
+          .limit(1)
+          .get();
+        
+        if (snapshot.empty) {
+          elements.passwordMessage.textContent = 'Nickname não encontrado.';
+          elements.passwordMessage.style.color = '#ff0000';
+          return false;
+        }
+        
+        const playerData = snapshot.docs[0].data();
+        if (playerData.password !== password) {
+          elements.passwordMessage.textContent = 'Senha incorreta!';
+          elements.passwordMessage.style.color = '#ff0000';
+          return false;
+        }
+        
+        player.id = snapshot.docs[0].id;
+        player.name = playerData.name;
+        player.password = playerData.password;
+        player.bestScore = playerData.bestScore || 0;
+        
+        // Salva no localStorage
+        localStorage.setItem('fastClickPlayer', JSON.stringify({
+          name: nickname,
+          password: password
+        }));
+        
+        // Verifica se tem jogo salvo
+        const savedGameSnapshot = await db.collection('saved_games')
+          .where('playerId', '==', player.id)
+          .limit(1)
+          .get();
+          
+        if (!savedGameSnapshot.empty) {
+          savedGame = savedGameSnapshot.docs[0].data();
+          elements.passwordMessage.textContent = 'Progresso carregado! Continuando jogo...';
+          elements.passwordMessage.style.color = '#00ff00';
+        } else {
+          elements.passwordMessage.textContent = 'Login realizado com sucesso!';
+          elements.passwordMessage.style.color = '#00ff00';
+          savedGame = null;
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Erro no login:", error);
+        elements.passwordMessage.textContent = 'Erro no login. Tente novamente.';
+        elements.passwordMessage.style.color = '#ff0000';
+        return false;
+      }
+    }
+
     function showBonusMessage(msg) {
-      bonusMessage.textContent = msg;
-      bonusMessage.style.opacity = '1';
-      setTimeout(() => { bonusMessage.style.opacity = '0'; }, 3000);
+      elements.bonusMessage.textContent = msg;
+      elements.bonusMessage.style.opacity = '1';
+      setTimeout(() => { elements.bonusMessage.style.opacity = '0'; }, 3000);
     }
 
-    function startGame() {
-      const name = playerNameInput.value.trim();
-      if (!name) return alert('Digite seu nome.');
-      player = { name, clicks: 0, combo: 0, maxCombo: 0, multiplier: 1 };
-      currentTime = gameDuration;
-      startBtn.disabled = true;
-      playerNameInput.disabled = true;
-      clickBtn.disabled = false;
-      clickBtn.classList.remove('bonus');
-      clickBtn.textContent = 'Clique aqui!';
-      scoreDisplay.textContent = 'Cliques: 0';
-      comboDisplay.textContent = 'Combo: x1';
-      comboDisplay.classList.remove('combo-glow');
-      timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
-      rankingDiv.style.display = 'none';
-
-      lastPowerUpTime = 0;
-      extraTimeBonusCount = 0;
-      speedStreakCount = 0;
-      ghostBoomUsed = false;
-      bonusTimers.forEach(clearTimeout);
-      bonusTimers = [];
-
-      frenzyBarContainer.style.display = 'none';
-      frenzyBar.style.width = '0%';
-
-      timerInterval = setInterval(() => {
-        currentTime -= 0.1;
-        if (currentTime <= 0) {
-          currentTime = 0;
-          endGame();
-        }
-        timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
-
-        if (frenzyBarContainer.style.display === 'block') {
-          updateFrenzyBar();
-        }
-      }, 100);
+    function detectAutoClicker(clickTimes) {
+      if (clickTimes.length < 10) return false;
+      
+      const intervals = [];
+      for (let i = 1; i < clickTimes.length; i++) {
+        intervals.push(clickTimes[i] - clickTimes[i-1]);
+      }
+      
+      const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      const variance = intervals.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / intervals.length;
+      const stdDev = Math.sqrt(variance);
+      
+      if (stdDev < 10 && avg < 50) {
+        return true;
+      }
+      
+      const uniqueIntervals = [...new Set(intervals)];
+      if (uniqueIntervals.length < 3 && intervals.length > 10) {
+        return true;
+      }
+      
+      return false;
     }
 
-    function endGame() {
+    async function saveGameProgress() {
+      if (!player.id) return;
+
+      try {
+        // Remove qualquer jogo salvo anterior
+        const oldGames = await db.collection('saved_games')
+          .where('playerId', '==', player.id)
+          .get();
+          
+        oldGames.forEach(async doc => {
+          await db.collection('saved_games').doc(doc.id).delete();
+        });
+
+        // Salva novo progresso
+        await db.collection('saved_games').add({
+          playerId: player.id,
+          playerName: player.name,
+          gameId: currentGameId,
+          score: player.clicks,
+          maxCombo: player.maxCombo,
+          savedAt: new Date(),
+          isBot: player.isBot
+        });
+        
+        // Atualiza melhor pontuação
+        if (player.clicks > player.bestScore) {
+          await db.collection('players').doc(player.id).update({
+            bestScore: player.clicks,
+            isBot: player.isBot
+          });
+          player.bestScore = player.clicks;
+        }
+      } catch (error) {
+        console.error("Erro ao salvar:", error);
+      }
+    }
+
+    function calculateBonus() {
+      const basePoints = 1 * player.multiplier;
+      const comboBonus = 1 + (player.combo * 0.03);
+      const hasRandomBonus = Math.random() < (0.05 + (player.combo * 0.01));
+      const speedBonus = recentClicks.length > 3 ? 1.2 : 1;
+      
+      return Math.floor(basePoints * comboBonus * (hasRandomBonus ? 1.5 : 1) * speedBonus);
+    }
+
+    async function startGame() {
+      if (!player.id) {
+        alert('Complete o registro ou login antes de começar.');
+        return;
+      }
+
+      try {
+        // Mostrar tela de jogo e esconder tela de login
+        if (elements.loginScreen) elements.loginScreen.style.display = 'none';
+        if (elements.gameScreen) elements.gameScreen.style.display = 'block';
+
+        // Configura o jogo com dados salvos ou inicia novo
+        if (savedGame) {
+          player.clicks = savedGame.score;
+          player.maxCombo = savedGame.maxCombo;
+          player.isBot = savedGame.isBot || false;
+          currentGameId = savedGame.gameId;
+          showBonusMessage(`Bem-vindo de volta, ${player.name}! Seu progresso foi carregado.`);
+        } else {
+          player.clicks = 0;
+          player.combo = 0;
+          player.maxCombo = 0;
+          player.isBot = false;
+          currentGameId = Date.now().toString();
+          showBonusMessage(`Novo jogo iniciado para ${player.name}! Boa sorte!`);
+        }
+
+        currentTime = gameDuration;
+        elements.clickBtn.disabled = false;
+        elements.clickBtn.classList.remove('bonus');
+        elements.clickBtn.textContent = 'Clique aqui!';
+        elements.scoreDisplay.textContent = `Cliques: ${player.clicks}`;
+        elements.comboDisplay.textContent = 'Combo: x1';
+        elements.comboDisplay.classList.remove('combo-glow');
+        elements.timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
+
+        lastPowerUpTime = 0;
+        extraTimeBonusCount = 0;
+        speedStreakCount = 0;
+        ghostBoomUsed = false;
+        bonusTimers.forEach(clearTimeout);
+        bonusTimers = [];
+
+        elements.frenzyBarContainer.style.display = 'none';
+        elements.frenzyBar.style.width = '0%';
+
+        // Mostra o ranking atualizado
+        await showRanking();
+
+        timerInterval = setInterval(() => {
+          currentTime -= 0.1;
+          if (currentTime <= 0) {
+            currentTime = 0;
+            endGame();
+          }
+          elements.timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
+
+          if (elements.frenzyBarContainer.style.display === 'block') {
+            updateFrenzyBar();
+          }
+        }, 100);
+      } catch (error) {
+        console.error('Erro ao iniciar jogo:', error);
+        showBonusMessage('Erro ao iniciar o jogo');
+        resetLoginScreen();
+      }
+    }
+
+    async function endGame() {
       clearInterval(timerInterval);
       clearTimeout(powerUpTimeout);
       bonusTimers.forEach(clearTimeout);
       bonusTimers = [];
       powerUpActive = null;
-      clickBtn.disabled = true;
-      startBtn.disabled = false;
-      playerNameInput.disabled = false;
-      clickBtn.classList.remove('bonus');
-      comboDisplay.classList.remove('combo-glow');
-      frenzyBarContainer.style.display = 'none';
-      frenzyBar.style.width = '0%';
-      saveRankingToFirestore();
-      showRanking();
+      elements.clickBtn.disabled = true;
+      elements.clickBtn.classList.remove('bonus');
+      elements.comboDisplay.classList.remove('combo-glow');
+      elements.frenzyBarContainer.style.display = 'none';
+      elements.frenzyBar.style.width = '0%';
+      
+      // Verifica se é bot
+      player.isBot = detectAutoClicker(recentClicks);
+      if (player.isBot) {
+        alert("Sistema detectou comportamento de autobot. Sua pontuação será marcada.");
+      }
+      
+      // Salva o progresso e atualiza ranking
+      await saveGameProgress();
+      await saveRankingToFirestore();
       showEndGameScreen();
     }
 
-    function handleClick() {
+    function handleClick(e) {
+      if (powerUpActive === 'pending') {
+        activatePowerUp();
+        return;
+      }
+
       const now = Date.now();
       recentClicks.push(now);
       recentClicks = recentClicks.filter(t => now - t <= 1000);
@@ -449,18 +915,15 @@
       lastClickTime = now;
 
       if (player.combo >= 5) {
-        comboDisplay.classList.add('combo-glow');
+        elements.comboDisplay.classList.add('combo-glow');
       } else {
-        comboDisplay.classList.remove('combo-glow');
+        elements.comboDisplay.classList.remove('combo-glow');
       }
 
-      let points = 1 * player.multiplier;
-      if (powerUpActive === 'double') points *= 2;
-      if (powerUpActive === 'triple') points *= 3;
-
+      const points = calculateBonus();
       player.clicks += points;
-      scoreDisplay.textContent = `Cliques: ${player.clicks}`;
-      comboDisplay.textContent = `Combo: x${player.combo}`;
+      elements.scoreDisplay.textContent = `Cliques: ${player.clicks}`;
+      elements.comboDisplay.textContent = `Combo: x${player.combo}`;
       clickSound.play();
 
       if (!powerUpActive && (now - lastPowerUpTime > powerUpCooldown) && Math.random() < 0.025) {
@@ -476,14 +939,9 @@
 
     function spawnPowerUp() {
       powerUpActive = 'pending';
-      clickBtn.classList.add('bonus');
-      clickBtn.textContent = 'BÔNUS! CLIQUE!';
+      elements.clickBtn.classList.add('bonus');
+      elements.clickBtn.textContent = 'BÔNUS! CLIQUE!';
     }
-
-    clickBtn.addEventListener('click', () => {
-      if (powerUpActive === 'pending') activatePowerUp();
-      else if (!clickBtn.disabled) handleClick();
-    });
 
     function activatePowerUp() {
       powerUpSound.play();
@@ -504,8 +962,8 @@
         player.multiplier = 2;
         showBonusMessage('Cliques em dobro por 5s!');
       }
-      clickBtn.classList.remove('bonus');
-      clickBtn.textContent = 'Clique aqui!';
+      elements.clickBtn.classList.remove('bonus');
+      elements.clickBtn.textContent = 'Clique aqui!';
       powerUpTimeout = setTimeout(() => {
         powerUpActive = null;
         player.multiplier = 1;
@@ -545,8 +1003,8 @@
     function startFrenzyBar(durationSeconds) {
       frenzyBarDuration = durationSeconds * 1000;
       frenzyBarStartTime = Date.now();
-      frenzyBarContainer.style.display = 'block';
-      frenzyBar.style.width = '100%';
+      elements.frenzyBarContainer.style.display = 'block';
+      elements.frenzyBar.style.width = '100%';
 
       if (frenzyBarInterval) clearInterval(frenzyBarInterval);
       frenzyBarInterval = setInterval(() => {
@@ -558,72 +1016,88 @@
       const elapsed = Date.now() - frenzyBarStartTime;
       const percent = 100 * (1 - elapsed / frenzyBarDuration);
       if (percent <= 0) {
-        frenzyBar.style.width = '0%';
-        frenzyBarContainer.style.display = 'none';
+        elements.frenzyBar.style.width = '0%';
+        elements.frenzyBarContainer.style.display = 'none';
         clearInterval(frenzyBarInterval);
       } else {
-        frenzyBar.style.width = `${percent}%`;
+        elements.frenzyBar.style.width = `${percent}%`;
       }
     }
 
     async function saveRankingToFirestore() {
       try {
-        await db.collection('rankings').add({
-          name: player.name,
-          score: player.clicks,
-          date: new Date()
-        });
+        // Verifica se já existe no ranking
+        const snapshot = await db.collection('rankings')
+          .where('name', '==', player.name)
+          .limit(1)
+          .get();
+        
+        if (snapshot.empty) {
+          await db.collection('rankings').add({
+            name: player.name,
+            score: player.clicks,
+            maxCombo: player.maxCombo,
+            date: new Date(),
+            isBot: player.isBot
+          });
+        } else {
+          // Atualiza se já existir
+          await db.collection('rankings').doc(snapshot.docs[0].id).update({
+            score: player.clicks,
+            maxCombo: player.maxCombo,
+            date: new Date(),
+            isBot: player.isBot
+          });
+        }
       } catch (e) {
         console.error("Erro ao salvar ranking:", e);
       }
     }
 
     async function showRanking() {
-      rankingList.innerHTML = 'Carregando...';
-      rankingDiv.style.display = 'block';
+      elements.rankingList.innerHTML = 'Carregando...';
+      elements.rankingDiv.style.display = 'block';
+      
       try {
         const snapshot = await db.collection('rankings')
           .orderBy('score', 'desc')
           .limit(10)
           .get();
+          
         if (snapshot.empty) {
-          rankingList.innerHTML = '<li>Nenhum ranking encontrado</li>';
+          elements.rankingList.innerHTML = '<li>Nenhum ranking encontrado</li>';
           return;
         }
-        rankingList.innerHTML = '';
+        
+        elements.rankingList.innerHTML = '';
         snapshot.forEach(doc => {
           const data = doc.data();
           const li = document.createElement('li');
-          li.textContent = `${data.name} - ${data.score} cliques`;
-          rankingList.appendChild(li);
+          
+          const formattedScore = data.score.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          
+          if (data.isBot) {
+            li.classList.add('bot-detected');
+            li.textContent = `${data.name} - ${formattedScore} cliques (Combo: ${data.maxCombo}) [BOT]`;
+          } else {
+            li.textContent = `${data.name} - ${formattedScore} cliques (Combo: ${data.maxCombo})`;
+          }
+          
+          elements.rankingList.appendChild(li);
         });
       } catch (e) {
         console.error('Erro ao carregar ranking:', e);
-        rankingList.innerHTML = '<li>Erro ao carregar ranking</li>';
+        elements.rankingList.innerHTML = '<li>Erro ao carregar ranking</li>';
       }
     }
 
     function showEndGameScreen() {
-      finalClicksSpan.textContent = player.clicks;
-      finalComboSpan.textContent = player.maxCombo;
-      finalScoreSpan.textContent = Math.round(player.clicks * (1 + player.maxCombo / 10));
-      endGameModal.style.display = 'flex';
+      elements.finalClicksSpan.textContent = player.clicks.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      elements.finalComboSpan.textContent = player.maxCombo;
+      elements.finalScoreSpan.textContent = Math.round(player.clicks * (1 + player.maxCombo / 10)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      elements.endGameModal.style.display = 'flex';
+      showRanking();
     }
-
-    playAgainBtn.addEventListener('click', () => {
-      endGameModal.style.display = 'none';
-      startGame();
-    });
-
-    exitBtn.addEventListener('click', () => {
-      endGameModal.style.display = 'none';
-      rankingDiv.style.display = 'block';
-      startBtn.disabled = false;
-      playerNameInput.disabled = false;
-    });
-
-    startBtn.addEventListener('click', startGame);
-    showRanking();
   </script>
 </body>
 </html>
