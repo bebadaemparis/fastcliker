@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAST CLICK - VERSÃO ALFA 1.0</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 700;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    #time {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 20px 0 10px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    #score {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    #combo {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #ffd700;
+      text-shadow: 0 0 5px #ffd700;
+      position: relative;
+      user-select: none;
+    }
+    #combo.combo-glow {
+      animation: comboGlow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes comboGlow {
+      0% {
+        text-shadow:
+          0 0 5px #ffd700,
+          0 0 10px #ffd700,
+          0 0 20px #ffdd44,
+          0 0 30px #ffcc00,
+          0 0 40px #ffbb00,
+          0 0 50px #ffaa00;
+      }
+      100% {
+        text-shadow:
+          0 0 10px #fff176,
+          0 0 15px #fff176,
+          0 0 25px #fff176,
+          0 0 35px #ffea00,
+          0 0 45px #ffea00,
+          0 0 55px #ffea00;
+      }
+    }
+    #frenzy-bar-container {
+      width: 100%;
+      max-width: 300px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto 15px auto;
+      display: none;
+      box-shadow: 0 0 8px #00ffcc;
+    }
+    #frenzy-bar {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      transition: width 0.1s linear;
+    }
+    #click-btn {
+      font-size: 3rem;
+      padding: 25px 60px;
+      border: none;
+      border-radius: 15px;
+      background: #ff6a00;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px #cc5200;
+      transition: background-color 0.15s, transform 0.1s;
+      user-select: none;
+      position: relative;
+    }
+    #click-btn.bonus {
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px 5px #4ade80; }
+      100% { box-shadow: 0 0 25px 10px #22c55e; }
+    }
+    #click-btn:active:not(:disabled) {
+      background-color: #ff8533;
+      transform: scale(0.95);
+      box-shadow: 0 3px #cc5200;
+    }
+    #click-btn:disabled {
+      background-color: #999;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    #start-btn {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      padding: 10px 30px;
+      border-radius: 10px;
+      border: none;
+      background-color: #22c55e;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px #15803d;
+      transition: background-color 0.2s ease;
+    }
+    #start-btn:disabled {
+      background-color: #7f9f88;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    #start-btn:hover:not(:disabled) {
+      background-color: #2dd36f;
+    }
+    #player-name {
+      margin-top: 20px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.2rem;
+      width: 250px;
+      text-align: center;
+    }
+    #ranking {
+      margin-top: 40px;
+      max-width: 400px;
+      width: 100%;
+      background-color: rgba(0,0,0,0.3);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.25);
+    }
+    #ranking h2 {
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 700;
+      text-shadow: 0 2px 3px rgba(0,0,0,0.3);
+    }
+    #ranking-list {
+      list-style: decimal inside;
+      padding-left: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 0;
+      scrollbar-width: thin;
+      scrollbar-color: #764ba2 rgba(255,255,255,0.1);
+    }
+    #ranking-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    #ranking-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+    }
+    #ranking-list::-webkit-scrollbar-thumb {
+      background-color: #764ba2;
+      border-radius: 10px;
+    }
+    #ranking-list li {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      transition: background-color 0.3s;
+    }
+    #ranking-list li:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    #bonus-message {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #00ffcc;
+      text-shadow: 0 0 8px #00ffcc;
+      transition: opacity 0.3s ease;
+      min-height: 2rem;
+      user-select: none;
+    }
+    #end-game-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    #end-game-content {
+      background: linear-gradient(135deg, #764ba2, #667eea);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    #end-game-content h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: #ffd700;
+    }
+    #end-game-stats {
+      margin: 20px 0;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+    .end-game-btn {
+      margin: 10px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    #play-again-btn {
+      background-color: #22c55e;
+      color: white;
+    }
+    #play-again-btn:hover {
+      background-color: #2dd36f;
+      transform: translateY(-2px);
+    }
+    #exit-btn {
+      background-color: #ef4444;
+      color: white;
+    }
+    #exit-btn:hover {
+      background-color: #f87171;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 480px) {
+      #click-btn {
+        font-size: 2.2rem;
+        padding: 20px 40px;
+      }
+      #player-name {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FAST CLICKER - JOGO EM FASE ALFA 1.0 DESENVOLVIDO BY XANDY - 3º PERIODO ADS - UNINORTE MANAUS - AM</h1>
+
+  <input type="text" id="player-name" placeholder="Digite seu nome" />
+  <button id="start-btn">Começar Jogo</button>
+
+  <div id="time">Tempo: 0.0s</div>
+  <div id="score">Cliques: 0</div>
+  <div id="combo">Combo: x1</div>
+
+  <div id="frenzy-bar-container">
+    <div id="frenzy-bar"></div>
+  </div>
+
+  <div id="bonus-message"></div>
+
+  <button id="click-btn" disabled>Clique aqui!</button>
+
+  <div id="ranking">
+    <h2>Ranking dos Melhores Jogadores</h2>
+    <ol id="ranking-list"></ol>
+  </div>
+
+  <div id="end-game-modal">
+    <div id="end-game-content">
+      <h2>Fim de Jogo!</h2>
+      <div id="end-game-stats">
+        <p>Total de cliques: <span id="final-clicks">0</span></p>
+        <p>Maior combo: <span id="final-combo">0</span></p>
+        <p>Pontuação final: <span id="final-score">0</span></p>
+      </div>
+      <button id="play-again-btn" class="end-game-btn">Jogar Novamente</button>
+      <button id="exit-btn" class="end-game-btn">Sair</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDfE2pKQhqJsJTSn4dfj4qyRpWivgB6GVM",
+      authDomain: "ghostclicker-fa27e.firebaseapp.com",
+      projectId: "ghostclicker-fa27e",
+      storageBucket: "ghostclicker-fa27e.appspot.com",
+      messagingSenderId: "348503867256",
+      appId: "1:348503867256:web:39ae55d9f5c249aa8b928d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const startBtn = document.getElementById('start-btn');
+    const clickBtn = document.getElementById('click-btn');
+    const playerNameInput = document.getElementById('player-name');
+    const timeDisplay = document.getElementById('time');
+    const scoreDisplay = document.getElementById('score');
+    const comboDisplay = document.getElementById('combo');
+    const bonusMessage = document.getElementById('bonus-message');
+    const rankingDiv = document.getElementById('ranking');
+    const rankingList = document.getElementById('ranking-list');
+    const endGameModal = document.getElementById('end-game-modal');
+    const finalClicksSpan = document.getElementById('final-clicks');
+    const finalComboSpan = document.getElementById('final-combo');
+    const finalScoreSpan = document.getElementById('final-score');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const exitBtn = document.getElementById('exit-btn');
+    const frenzyBarContainer = document.getElementById('frenzy-bar-container');
+    const frenzyBar = document.getElementById('frenzy-bar');
+
+    let gameDuration = 10;
+    let currentTime = 0;
+    let timerInterval;
+    let powerUpActive = null;
+    let powerUpTimeout;
+    let bonusTimers = [];
+    let lastClickTime = 0;
+    let comboResetDelay = 1000;
+    let recentClicks = [];
+    let comboTimer = null;
+    let lastPowerUpTime = 0;
+    const powerUpCooldown = 7000;
+    let extraTimeBonusCount = 0;
+    let maxExtraTimeBonus = 3;
+    let speedStreakCount = 0;
+    let maxSpeedStreak = 2;
+    let ghostBoomUsed = false;
+    const maxGameTime = 25;
+    let player = { name: '', clicks: 0, combo: 0, maxCombo: 0, multiplier: 1 };
+
+    const clickSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+    const comboBreakSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+    const powerUpSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang.ogg');
+
+    function showBonusMessage(msg) {
+      bonusMessage.textContent = msg;
+      bonusMessage.style.opacity = '1';
+      setTimeout(() => { bonusMessage.style.opacity = '0'; }, 3000);
+    }
+
+    function startGame() {
+      const name = playerNameInput.value.trim();
+      if (!name) return alert('Digite seu nome.');
+      player = { name, clicks: 0, combo: 0, maxCombo: 0, multiplier: 1 };
+      currentTime = gameDuration;
+      startBtn.disabled = true;
+      playerNameInput.disabled = true;
+      clickBtn.disabled = false;
+      clickBtn.classList.remove('bonus');
+      clickBtn.textContent = 'Clique aqui!';
+      scoreDisplay.textContent = 'Cliques: 0';
+      comboDisplay.textContent = 'Combo: x1';
+      comboDisplay.classList.remove('combo-glow');
+      timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
+      rankingDiv.style.display = 'none';
+
+      lastPowerUpTime = 0;
+      extraTimeBonusCount = 0;
+      speedStreakCount = 0;
+      ghostBoomUsed = false;
+      bonusTimers.forEach(clearTimeout);
+      bonusTimers = [];
+
+      frenzyBarContainer.style.display = 'none';
+      frenzyBar.style.width = '0%';
+
+      timerInterval = setInterval(() => {
+        currentTime -= 0.1;
+        if (currentTime <= 0) {
+          currentTime = 0;
+          endGame();
+        }
+        timeDisplay.textContent = `Tempo: ${currentTime.toFixed(1)}s`;
+
+        if (frenzyBarContainer.style.display === 'block') {
+          updateFrenzyBar();
+        }
+      }, 100);
+    }
+
+    function endGame() {
+      clearInterval(timerInterval);
+      clearTimeout(powerUpTimeout);
+      bonusTimers.forEach(clearTimeout);
+      bonusTimers = [];
+      powerUpActive = null;
+      clickBtn.disabled = true;
+      startBtn.disabled = false;
+      playerNameInput.disabled = false;
+      clickBtn.classList.remove('bonus');
+      comboDisplay.classList.remove('combo-glow');
+      frenzyBarContainer.style.display = 'none';
+      frenzyBar.style.width = '0%';
+      saveRankingToFirestore();
+      showRanking();
+      showEndGameScreen();
+    }
+
+    function handleClick() {
+      const now = Date.now();
+      recentClicks.push(now);
+      recentClicks = recentClicks.filter(t => now - t <= 1000);
+
+      if (recentClicks.length >= 5 && speedStreakCount < maxSpeedStreak) {
+        activateSpecialBonus('speedStreak');
+        recentClicks = [];
+        speedStreakCount++;
+      }
+
+      if (now - lastClickTime <= comboResetDelay) player.combo++;
+      else {
+        if (player.combo > 1) comboBreakSound.play();
+        player.combo = 1;
+      }
+
+      if (player.combo > player.maxCombo) player.maxCombo = player.combo;
+      lastClickTime = now;
+
+      if (player.combo >= 5) {
+        comboDisplay.classList.add('combo-glow');
+      } else {
+        comboDisplay.classList.remove('combo-glow');
+      }
+
+      let points = 1 * player.multiplier;
+      if (powerUpActive === 'double') points *= 2;
+      if (powerUpActive === 'triple') points *= 3;
+
+      player.clicks += points;
+      scoreDisplay.textContent = `Cliques: ${player.clicks}`;
+      comboDisplay.textContent = `Combo: x${player.combo}`;
+      clickSound.play();
+
+      if (!powerUpActive && (now - lastPowerUpTime > powerUpCooldown) && Math.random() < 0.025) {
+        spawnPowerUp();
+        lastPowerUpTime = now;
+      }
+
+      if (player.combo === 10) activateSpecialBonus('comboFrenzy');
+      if (player.combo >= 15 && !comboTimer && !ghostBoomUsed) {
+        comboTimer = setTimeout(() => activateSpecialBonus('ghostBoom'), 5000);
+      }
+    }
+
+    function spawnPowerUp() {
+      powerUpActive = 'pending';
+      clickBtn.classList.add('bonus');
+      clickBtn.textContent = 'BÔNUS! CLIQUE!';
+    }
+
+    clickBtn.addEventListener('click', () => {
+      if (powerUpActive === 'pending') activatePowerUp();
+      else if (!clickBtn.disabled) handleClick();
+    });
+
+    function activatePowerUp() {
+      powerUpSound.play();
+      const bonusType = Math.random() < 0.5 ? 'extraTime' : 'double';
+      if (bonusType === 'extraTime') {
+        if (extraTimeBonusCount < maxExtraTimeBonus) {
+          currentTime = Math.min(currentTime + 5, maxGameTime);
+          extraTimeBonusCount++;
+          showBonusMessage('+5 segundos!');
+          powerUpActive = 'extraTime';
+        } else {
+          powerUpActive = 'double';
+          player.multiplier = 2;
+          showBonusMessage('Cliques em dobro por 5s!');
+        }
+      } else {
+        powerUpActive = 'double';
+        player.multiplier = 2;
+        showBonusMessage('Cliques em dobro por 5s!');
+      }
+      clickBtn.classList.remove('bonus');
+      clickBtn.textContent = 'Clique aqui!';
+      powerUpTimeout = setTimeout(() => {
+        powerUpActive = null;
+        player.multiplier = 1;
+      }, 5000);
+    }
+
+    function activateSpecialBonus(type) {
+      if (type === 'comboFrenzy') {
+        currentTime = Math.min(currentTime + 3, maxGameTime);
+        showBonusMessage('FRENESI DE COMBO! +3s');
+        startFrenzyBar(3);
+      }
+      if (type === 'speedStreak') {
+        player.multiplier = 3;
+        showBonusMessage('RELÂMPAGO! x3 CLIQUES POR 3s');
+        const timeout1 = setTimeout(() => player.multiplier = 1, 3000);
+        bonusTimers.push(timeout1);
+      }
+      if (type === 'ghostBoom' && !ghostBoomUsed) {
+        currentTime = Math.min(currentTime + 5, maxGameTime);
+        player.multiplier = 2;
+        showBonusMessage('EXPLOSÃO FANTASMA! +5s e x2 CLIQUES!');
+        const timeout2 = setTimeout(() => {
+          powerUpActive = null;
+          player.multiplier = 1;
+        }, 5000);
+        bonusTimers.push(timeout2);
+        ghostBoomUsed = true;
+        comboTimer = null;
+      }
+    }
+
+    let frenzyBarInterval;
+    let frenzyBarDuration;
+    let frenzyBarStartTime;
+
+    function startFrenzyBar(durationSeconds) {
+      frenzyBarDuration = durationSeconds * 1000;
+      frenzyBarStartTime = Date.now();
+      frenzyBarContainer.style.display = 'block';
+      frenzyBar.style.width = '100%';
+
+      if (frenzyBarInterval) clearInterval(frenzyBarInterval);
+      frenzyBarInterval = setInterval(() => {
+        updateFrenzyBar();
+      }, 50);
+    }
+
+    function updateFrenzyBar() {
+      const elapsed = Date.now() - frenzyBarStartTime;
+      const percent = 100 * (1 - elapsed / frenzyBarDuration);
+      if (percent <= 0) {
+        frenzyBar.style.width = '0%';
+        frenzyBarContainer.style.display = 'none';
+        clearInterval(frenzyBarInterval);
+      } else {
+        frenzyBar.style.width = `${percent}%`;
+      }
+    }
+
+    async function saveRankingToFirestore() {
+      try {
+        await db.collection('rankings').add({
+          name: player.name,
+          score: player.clicks,
+          date: new Date()
+        });
+      } catch (e) {
+        console.error("Erro ao salvar ranking:", e);
+      }
+    }
+
+    async function showRanking() {
+      rankingList.innerHTML = 'Carregando...';
+      rankingDiv.style.display = 'block';
+      try {
+        const snapshot = await db.collection('rankings')
+          .orderBy('score', 'desc')
+          .limit(10)
+          .get();
+        if (snapshot.empty) {
+          rankingList.innerHTML = '<li>Nenhum ranking encontrado</li>';
+          return;
+        }
+        rankingList.innerHTML = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const li = document.createElement('li');
+          li.textContent = `${data.name} - ${data.score} cliques`;
+          rankingList.appendChild(li);
+        });
+      } catch (e) {
+        console.error('Erro ao carregar ranking:', e);
+        rankingList.innerHTML = '<li>Erro ao carregar ranking</li>';
+      }
+    }
+
+    function showEndGameScreen() {
+      finalClicksSpan.textContent = player.clicks;
+      finalComboSpan.textContent = player.maxCombo;
+      finalScoreSpan.textContent = Math.round(player.clicks * (1 + player.maxCombo / 10));
+      endGameModal.style.display = 'flex';
+    }
+
+    playAgainBtn.addEventListener('click', () => {
+      endGameModal.style.display = 'none';
+      startGame();
+    });
+
+    exitBtn.addEventListener('click', () => {
+      endGameModal.style.display = 'none';
+      rankingDiv.style.display = 'block';
+      startBtn.disabled = false;
+      playerNameInput.disabled = false;
+    });
+
+    startBtn.addEventListener('click', startGame);
+    showRanking();
+  </script>
+</body>
+</html>
